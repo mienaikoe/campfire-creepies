@@ -6,7 +6,7 @@ const DeckHand = ({ carryOver, deck, title }) => {
   return (
     <div className={styles.handSection}>
       <div className={styles.handGroup}>
-        <h3>Carry Over Cards</h3>
+        <h2>Carry Over Cards</h2>
         <div className={styles.hand}>
           {carryOver.cards.map((card) => (
             <CardCard key={card.key} card={card} />
@@ -14,7 +14,7 @@ const DeckHand = ({ carryOver, deck, title }) => {
         </div>
       </div>
       <div className={styles.handGroup}>
-        <h3>Played Cards</h3>
+        <h2>Played Cards</h2>
         <div className={styles.hand}>
           {deck.cards.map((card) => (
             <CardCard key={card.key} card={card} />

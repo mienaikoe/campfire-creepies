@@ -10,11 +10,28 @@
   flex-direction: column;
   align-items: flex-start;
   margin-right: 2rem;
+
+  h2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 1rem;
+
+    button {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+  }
 }
 
 .hand {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
   overflow-x: auto;
+  // white-space: nowrap;
+
+  & > * {
+    display: inline-block;
+    vertical-align: top;
+  }
 }

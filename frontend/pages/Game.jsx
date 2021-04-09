@@ -50,8 +50,14 @@ export default () => {
   return (
     <div className={styles.main}>
       <div className={styles.round}>
-        <span>Round {gameState.round}</span>
-        {gameState.isLost ? <span>Lost the Game!"</span> : null}
+        <span>
+          {gameState.isLost
+            ? "Campers Lost the Game!"
+            : gameState.isWon
+            ? "Campers Won the Game!"
+            : `Round ${gameState.round}`}
+        </span>
+
         <button onClick={proceed} disabled={!isSettled}>
           Proceed
         </button>

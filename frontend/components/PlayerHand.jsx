@@ -2,6 +2,18 @@ import React, { useEffect, useState } from "react";
 import CardCard from "./CardCard";
 import styles from "./Hands.less";
 
+function getCallToAction(round, isSwap, isSettled) {
+  if (round === 0) {
+    return "Choose 3 cards to discard";
+  } else if (isSwap) {
+    return "Chose 1 card to swap";
+  } else if (isSettled) {
+    return "Wait for other players";
+  } else {
+    return "Chose 1 card to play";
+  }
+}
+
 const PlayerHand = ({ player, round, isSwap, isSettled, submit }) => {
   const [selectedCards, setSelectedCards] = useState([]);
 
@@ -32,12 +44,14 @@ const PlayerHand = ({ player, round, isSwap, isSettled, submit }) => {
   return (
     <div className={styles.handSection}>
       <div className={styles.handGroup}>
-        <h3>
-          {player.name}
+        <h2>
+          <span>
+            {player.name}: {getCallToAction(round, isSwap, isSettled)}
+          </span>
           <button disabled={!isAddingDisabled} onClick={onSubmit}>
-            Play Cards
+            Lock it in
           </button>
-        </h3>
+        </h2>
         <div className={styles.hand}>
           {player.hand.map((card) => (
             <CardCard
