@@ -5,11 +5,19 @@
   // border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 0.5rem;
   width: 10rem;
+  flex: 10rem 0 0;
   height: 16rem;
   margin: 1rem;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+  display: inline-block;
+  vertical-align: top;
+  transition: margin-top 0.3s ease;
 
   p {
     font-size: 0.9rem;
+  }
+
+  &.selected {
+    margin-top: 0;
   }
 }

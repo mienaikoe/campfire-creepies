@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import MainPage from "./pages/MainPage";
+import App from "./App";
 
-const mainPage = <MainPage />;
+const app = <App />;
 
-ReactDOM.render(mainPage, document.getElementById("app"));
+ReactDOM.render(app, document.getElementById("app"));
