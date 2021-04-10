@@ -6,17 +6,21 @@ const DeckHand = ({ carryOver, deck, title }) => {
   return (
     <div className={styles.handSection}>
       <div className={styles.handGroup}>
-        <h2>Carry Over Cards</h2>
+        <div className={styles.heading}>
+          <h2>Played Cards</h2>
+        </div>
         <div className={styles.hand}>
-          {carryOver.cards.map((card) => (
+          {deck.cards.map((card) => (
             <CardCard key={card.key} card={card} />
           ))}
         </div>
       </div>
       <div className={styles.handGroup}>
-        <h2>Played Cards</h2>
+        <div className={styles.heading}>
+          <h2>Carry Over Cards</h2>
+        </div>
         <div className={styles.hand}>
-          {deck.cards.map((card) => (
+          {carryOver.cards.map((card) => (
             <CardCard key={card.key} card={card} />
           ))}
         </div>

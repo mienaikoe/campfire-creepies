@@ -7,28 +7,31 @@ import DeckHand from "../components/DeckHand";
 
 const PLAYERS = 4;
 
-export default () => {
+const Game = () => {
   const gameState = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const isSettled =
-    !gameState.isLost &&
+    !gameState.outcome &&
+    gameState.players.length > 0 &&
     gameState.settledPlayers.length === gameState.players.length;
-
-  console.log(gameState);
 
   useEffect(() => {
     dispatch(DealerReducer.methods.reset());
     for (let ix = 1; ix <= PLAYERS; ix++) {
       dispatch(DealerReducer.methods.addPlayer(`Player ${ix}`));
     }
+    dispatch(DealerReducer.methods.assignPlayers());
   }, []);
 
   useEffect(() => {
-    if (gameState.round !== 0 && isSettled) {
-      dispatch(DealerReducer.methods.calculateTable());
+    if (gameState.isTableCalculated === true) {
+      dispatch(DealerReducer.methods.clearTable());
+      if (!gameState.isSwap) {
+        dispatch(DealerReducer.methods.nextRound());
+      }
     }
-  }, [isSettled]);
+  }, [gameState.isTableCalculated]);
 
   const submit = (player, cards) => {
     if (gameState.round === 0) {
@@ -39,27 +42,36 @@ export default () => {
   };
 
   const proceed = () => {
-    if (gameState.round === 0) {
+    if (gameState.outcome) {
+      dispatch(DealerReducer.methods.reset());
+    } else if (gameState.round === 0) {
       gameState.players.forEach((player) => {
         dispatch(DealerReducer.methods.pullFromReserve(player, 3));
       });
+      dispatch(DealerReducer.methods.clearTable());
+      dispatch(DealerReducer.methods.nextRound());
+    } else if (isSettled) {
+      if (gameState.isSwap) {
+        dispatch(DealerReducer.methods.swapTable());
+        dispatch(DealerReducer.methods.nextRound());
+      } else {
+        dispatch(DealerReducer.methods.calculateTable());
+      }
     }
-    dispatch(DealerReducer.methods.clearTable());
   };
 
   return (
     <div className={styles.main}>
       <div className={styles.round}>
         <span>
-          {gameState.isLost
-            ? "Campers Lost the Game!"
-            : gameState.isWon
-            ? "Campers Won the Game!"
-            : `Round ${gameState.round}`}
+          {gameState.outcome
+            ? `Campers ${gameState.outcome} the game!`
+            : `Round ${gameState.round} ${
+                gameState.isSwap ? "(Swappping)" : ""
+              }`}
         </span>
-
         <button onClick={proceed} disabled={!isSettled}>
-          Proceed
+          {gameState.outcome ? "Reset" : isSettled ? "Calculate" : "Proceed"}
         </button>
       </div>
       <DeckHand
@@ -68,14 +80,10 @@ export default () => {
         title="Table"
       />
       {gameState.players.map((player) => (
-        <PlayerHand
-          key={player.name}
-          player={player}
-          round={gameState.round}
-          isSettled={gameState.settledPlayers.indexOf(player) !== -1}
-          submit={submit}
-        />
+        <PlayerHand key={player.name} player={player} submit={submit} />
       ))}
     </div>
   );
 };
+
+export default Game;

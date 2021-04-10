@@ -143,10 +143,13 @@ function calculateTable(state) {
     }
   }
 
+  const outcome = logScore === 0 ? "lost" : null;
+
   const clearState = {
-    carryOvers: new Deck([...groupedCards.termites, ...carryOverLogs]),
-    isSwap: groupedCards.swap.length > 0,
-    outcome: logScore === 0 ? "lost" : null,
+    carryOver: new Deck([...groupedCards.termites, ...carryOverLogs]),
+    isSwap: outcome ? false : groupedCards.swap.length > 0,
+    isTableCalculated: true,
+    outcome,
   };
 
   return { ...state, ...clearState };
@@ -154,11 +157,23 @@ function calculateTable(state) {
 
 function clearTable(state) {
   state.reserve.concat(state.table.clear());
+  return { ...state, isTableCalculated: false, settledPlayers: [] };
+}
+
+function swapTable(state) {
+  state.table.shuffle();
+  state.players.forEach((player) => {
+    player.hand.push(state.table.pop());
+  });
+  return { ...state, isTableCalculated: false, settledPlayers: [] };
+}
+
+function nextRound(state) {
   const newRound = state.round + 1;
   if (newRound === 8) {
-    return { ...state, outcome: "won" };
+    return { ...state, outcome: "won", isSwap: false };
   } else {
-    return { ...state, settledPlayers: [], round: newRound };
+    return { ...state, settledPlayers: [], isSwap: false, round: newRound };
   }
 }
 
@@ -180,6 +195,10 @@ function DealerReducer(state = initialState, action) {
       return calculateTable(state);
     case "clearTable":
       return clearTable(state);
+    case "swapTable":
+      return swapTable(state);
+    case "nextRound":
+      return nextRound(state);
     case "reset":
       return { ...initialState, reserve: initialState.reserve.shuffle() };
     default:
@@ -214,6 +233,10 @@ DealerReducer.methods = {
   calculateTable: () => ({ type: "calculateTable" }),
   clearTable: () => ({
     type: "clearTable",
+  }),
+  swapTable: () => ({ type: "swapTable" }),
+  nextRound: () => ({
+    type: "nextRound",
   }),
   reset: () => ({ type: "reset" }),
 };

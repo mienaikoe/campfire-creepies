@@ -7,18 +7,21 @@
   width: 10rem;
   flex: 10rem 0 0;
   height: 16rem;
-  margin: 1rem;
+  margin: 0 1rem 1rem 0;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
   display: inline-block;
   vertical-align: top;
   transition: margin-top 0.3s ease;
-  cursor: pointer;
 
   p {
     font-size: 0.9rem;
   }
 
+  &.selectable {
+    cursor: pointer;
+  }
+
   &.selected {
-    margin-top: 0;
+    margin-top: -1rem;
   }
 }

@@ -9,29 +9,37 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-right: 2rem;
+  width: 100%;
 
-  h2 {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  .heading,
+  .hand {
+    box-sizing: border-box;
+    padding: 1rem 2rem;
     width: 100%;
-    margin: 1rem;
+  }
 
+  .heading {
+    h2 {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0;
+    }
     button {
       padding: 0.5rem 1rem;
       cursor: pointer;
     }
   }
-}
 
-.hand {
-  overflow-x: auto;
-  // white-space: nowrap;
+  .hand {
+    overflow-x: auto;
+    // white-space: nowrap;
 
-  & > * {
-    display: inline-block;
-    vertical-align: top;
+    & > * {
+      display: inline-block;
+      vertical-align: top;
+    }
   }
 }
