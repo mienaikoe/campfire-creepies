@@ -13,23 +13,46 @@ for (const card_key in CARD_TYPES) {
 
 const initialState = {
   table: new Deck([]),
-  reserve: new Deck(startingReserve),
+  reserve: new Deck(startingReserve).shuffle(),
   carryOver: new Deck([]),
   players: [],
   settledPlayers: [],
   round: 0,
+  draftRound: 0,
+  isSettingUp: true,
   isSwap: false,
   outcome: null,
 };
 
 function addPlayer(state, action) {
   const player = {
-    name: action.name,
+    name: action.name || "Player",
     role: "Camper",
     hand: state.reserve.createHand(RULES.CARDS_PER_PERSON),
+    draft: new Deck([]),
   };
   state.players.push(player);
   return { ...state };
+}
+
+function removePlayer(state, action) {
+  const idx = state.players.indexOf(action.player);
+  state.players.splice(idx, 1);
+  return { ...state };
+}
+
+function changePlayer(state, action) {
+  const { player, name } = action;
+  player.name = name;
+  return { ...state };
+}
+
+function pushToDraft(state, action) {
+  let targetIndex = state.players.indexOf(action.player) + 1;
+  if (targetIndex === state.players.length) {
+    targetIndex = 0;
+  }
+  return pushTo(state, action, state.players[targetIndex].draft);
 }
 
 function assignPlayers(state) {
@@ -41,16 +64,26 @@ function assignPlayers(state) {
     }
     state.players[ix].role = "Creepie";
   }
-  return { ...state };
+  return { ...state, isSettingUp: false };
+}
+
+function clearDraft(state) {
+  state.players.forEach((player) => {
+    player.hand.concat(player.draft.empty());
+  });
+  state.draftRound += 1;
+
+  if (state.draftRound === RULES.DRAFT_ROUNDS) {
+    state.round = 1;
+  }
+  return { ...state, settledPlayers: [] };
 }
 
 function pushTo(state, action, destination) {
   const playerIdx = state.players.indexOf(action.player);
   const hand = state.players[playerIdx].hand;
   action.cards.forEach((card) => {
-    const cardIdx = hand.indexOf(card);
-    const [discardedCard] = hand.splice(cardIdx, 1);
-    destination.push(discardedCard);
+    destination.push(hand.discard(card));
   });
   destination.shuffle();
   state.settledPlayers.push(action.player);
@@ -181,8 +214,16 @@ function DealerReducer(state = initialState, action) {
   switch (action.type) {
     case "addPlayer":
       return addPlayer(state, action);
+    case "removePlayer":
+      return removePlayer(state, action);
+    case "changePlayer":
+      return changePlayer(state, action);
     case "assignPlayers":
       return assignPlayers(state);
+    case "pushToDraft":
+      return pushToDraft(state, action);
+    case "clearDraft":
+      return clearDraft(state);
     case "pushToReserve":
       return pushTo(state, action, state.reserve);
     case "pullFromReserve":
@@ -209,7 +250,17 @@ function DealerReducer(state = initialState, action) {
 DealerReducer.initialState = initialState;
 DealerReducer.methods = {
   addPlayer: (name) => ({ type: "addPlayer", name }),
+  removePlayer: (player) => ({ type: "removePlayer", player }),
+  changePlayer: (player, name) => ({ type: "changePlayer", player, name }),
   assignPlayers: () => ({ type: "assignPlayers" }),
+  pushToDraft: (player, cards) => ({
+    type: "pushToDraft",
+    player,
+    cards,
+  }),
+  clearDraft: () => ({
+    type: "clearDraft",
+  }),
   pushToReserve: (player, cards) => ({
     type: "pushToReserve",
     player,

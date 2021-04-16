@@ -3,4 +3,5 @@ export default {
   INITIAL_DISCARD: 3,
   CREEPIES: [0, 0, 1, 1, 1, 2, 2, 3],
   ROUNDS: 7,
+  DRAFT_ROUNDS: 6,
 };

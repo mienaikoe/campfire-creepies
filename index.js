@@ -7,7 +7,6 @@ app.register(require("fastify-static"), {
 });
 
 app.get("/", function (req, reply) {
-  console.log("Root");
   return reply.sendFile("index.html");
 });
 

@@ -1,34 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CardCard from "./CardCard";
+import RULES from "../config/rules";
+import DealerReducer from "../models/DealerReducer";
 import styles from "./Hands.less";
 
-function getCallToAction(round, isSwap, isSettled) {
-  if (round === 0) {
-    return "Choose 3 cards to discard";
-  } else if (isSettled) {
-    return "Wait for other players";
-  } else if (isSwap) {
-    return "Chose 1 card to swap";
-  } else {
-    return "Chose 1 card to play";
-  }
-}
-
-const PlayerHand = ({ player, submit }) => {
+const PlayerHand = ({ player }) => {
   const [selectedCards, setSelectedCards] = useState([]);
-  const { round, settledPlayers, isSwap } = useSelector((state) => state);
+  const gameState = useSelector((state) => state);
+  const { round, draftRound, settledPlayers, isSwap } = gameState;
+  const dispatch = useDispatch();
 
   const isSettled = settledPlayers.indexOf(player) !== -1;
 
+  const discardLimit = RULES.DRAFT_ROUNDS - draftRound;
+
   const isSubmitDisabled =
-    isSettled || selectedCards.length < (round === 0 ? 3 : 1);
+    isSettled ||
+    gameState.outcome ||
+    selectedCards.length < (round === 0 ? discardLimit : 1);
   const isAddingDisabled =
-    isSettled || selectedCards.length === (round === 0 ? 3 : 1);
+    isSettled ||
+    gameState.outcome ||
+    selectedCards.length === (round === 0 ? discardLimit : 1);
 
   // useEffect(() => {
   //   setSelectedCards([]);
   // }, [round, isSwap]);
+
+  function getCallToAction(gameState) {
+    if (isSettled) {
+      return "Wait for other players";
+    } else if (gameState.round === 0) {
+      return `Choose ${discardLimit} cards to pass to the next player`;
+    } else if (isSwap) {
+      return "Chose 1 card to swap";
+    } else {
+      return "Chose 1 card to play";
+    }
+  }
 
   const onSelect = (card) => {
     const cardIdx = selectedCards.indexOf(card);
@@ -43,7 +53,11 @@ const PlayerHand = ({ player, submit }) => {
   };
 
   const onSubmit = () => {
-    submit(player, selectedCards);
+    if (gameState.round === 0) {
+      dispatch(DealerReducer.methods.pushToDraft(player, selectedCards));
+    } else {
+      dispatch(DealerReducer.methods.pushToTable(player, selectedCards));
+    }
     setSelectedCards([]);
   };
 
@@ -59,10 +73,10 @@ const PlayerHand = ({ player, submit }) => {
               Lock it in
             </button>
           </h2>
-          <p>{getCallToAction(round, isSwap, isSettled)}</p>
+          <p>{getCallToAction(gameState)}</p>
         </div>
         <div className={styles.hand}>
-          {player.hand.map((card) => {
+          {player.hand.cards.map((card) => {
             const isSelected = selectedCards.indexOf(card) !== -1;
             return (
               <CardCard

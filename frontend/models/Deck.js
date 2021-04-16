@@ -31,8 +31,20 @@ class Deck {
     return this.cards.pop();
   }
 
+  empty() {
+    const cardList = this.cards;
+    this.cards = [];
+    return cardList;
+  }
+
+  discard(card) {
+    const cardIdx = this.cards.indexOf(card);
+    const [discardedCard] = this.cards.splice(cardIdx, 1);
+    return discardedCard;
+  }
+
   createHand(numCards) {
-    return this.cards.splice(0, numCards);
+    return new Deck(this.cards.splice(0, numCards));
   }
 }
 
