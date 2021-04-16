@@ -26,7 +26,7 @@ const initialState = {
 
 function addPlayer(state, action) {
   const player = {
-    name: action.name || "Player",
+    name: action.name || "",
     role: "Camper",
     hand: state.reserve.createHand(RULES.CARDS_PER_PERSON),
     draft: new Deck([]),
