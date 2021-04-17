@@ -4,6 +4,7 @@ class Card {
     this.type = card_type.key;
     this.name = card_type.name;
     this.description = card_type.description;
+    this.image = card_type.image;
   }
 }
 
