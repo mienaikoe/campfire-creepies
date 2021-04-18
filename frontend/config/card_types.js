@@ -76,6 +76,5 @@ export default {
     key: "log",
     name: "Log",
     description: "You need these to survive the night!",
-    image: "/assets/log_rescue.png",
   },
 };

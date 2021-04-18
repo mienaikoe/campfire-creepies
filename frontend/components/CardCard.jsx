@@ -11,9 +11,14 @@ const CardCard = ({ card, selected, onSelect }) => {
       className={classNames.join(" ")}
       onClick={onSelect ? () => onSelect(card) : null}
     >
-      <img src={card.image} />
-      {/* <h3>{card.name}</h3>
-      <p>{card.description}</p> */}
+      {card.image ? (
+        <img src={card.image} />
+      ) : (
+        <>
+          <h3>{card.name}</h3>
+          <p>{card.description}</p>
+        </>
+      )}
     </div>
   );
 };
